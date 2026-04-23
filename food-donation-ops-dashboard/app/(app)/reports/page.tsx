@@ -7,7 +7,17 @@ export default async function ReportsPage() {
   const from = today.toISOString().slice(0, 10);
   const to = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
 
-  const [{ data: nearExpiry }, { data: zones }, { data: inventory }, { data: openOrders }, { data: orderLines }, { data: allocations }, { data: lots }, { data: donors }] =
+  const [
+    { data: nearExpiry },
+    { data: zones },
+    { data: inventory },
+    { data: openOrders },
+    { data: orderLines },
+    { data: allocations },
+    { data: lots },
+    { data: donors },
+    { data: expiredLots },
+  ] =
     await Promise.all([
       supabase
         .from("tblDonationLot")
@@ -23,6 +33,12 @@ export default async function ReportsPage() {
       supabase.from("tblPickAllocation").select("OrderLineID, Alloc_Units"),
       supabase.from("tblDonationLot").select("DonorID, Quantity_Units, Unit_Weight_kg"),
       supabase.from("tblDonor").select("DonorID, Name"),
+      supabase
+        .from("tblDonationLot")
+        .select("LotID, Expiry_Date, Quantity_Units, Unit_Weight_kg, Status, tblProduct:ProductID(name), tblDonor:DonorID(Name)")
+        .lt("Expiry_Date", from)
+        .in("Status", ["Received", "Stored", "Allocated", "Picked"])
+        .order("Expiry_Date", { ascending: true }),
     ]);
 
   const zoneUsage = (zones || []).map((zone) => {
@@ -67,6 +83,35 @@ export default async function ReportsPage() {
     totalKg: Number(value.kg.toFixed(2)),
   }));
 
+  const expiredRows = (expiredLots || []).map((row) => {
+    const units = Number(row.Quantity_Units || 0);
+    const kg = Number((units * Number(row.Unit_Weight_kg || 0)).toFixed(2));
+    return { ...row, units, kg };
+  });
+
+  const expiredSummary = expiredRows.reduce(
+    (acc, row) => ({
+      totalLots: acc.totalLots + 1,
+      totalUnits: acc.totalUnits + row.units,
+      totalKg: Number((acc.totalKg + row.kg).toFixed(2)),
+    }),
+    { totalLots: 0, totalUnits: 0, totalKg: 0 },
+  );
+
+  const expiredTrendMap = new Map<string, { date: string; totalLots: number; totalUnits: number; totalKg: number }>();
+  expiredRows.forEach((row) => {
+    const date = row.Expiry_Date;
+    const current = expiredTrendMap.get(date) || { date, totalLots: 0, totalUnits: 0, totalKg: 0 };
+    expiredTrendMap.set(date, {
+      date,
+      totalLots: current.totalLots + 1,
+      totalUnits: current.totalUnits + row.units,
+      totalKg: Number((current.totalKg + row.kg).toFixed(2)),
+    });
+  });
+  const expiredTrend = Array.from(expiredTrendMap.values()).sort((a, b) => a.date.localeCompare(b.date));
+  const maxExpiredKg = expiredTrend.reduce((max, row) => Math.max(max, row.totalKg), 0);
+
   return (
     <div className="space-y-6">
       <PageHeader title="Reports" />
@@ -100,7 +145,93 @@ export default async function ReportsPage() {
       </details>
 
       <details className="card p-4" open>
-        <summary className="cursor-pointer text-sm font-semibold text-slate-700">2) Zone Utilization</summary>
+        <summary className="cursor-pointer text-sm font-semibold text-slate-700">2) Expired Food Overview</summary>
+        <div className="mt-3 grid gap-3 md:grid-cols-3">
+          <div className="rounded-md border border-slate-200 p-3">
+            <div className="text-xs text-slate-500">Expired Lots</div>
+            <div className="text-xl font-semibold text-slate-900">{expiredSummary.totalLots}</div>
+          </div>
+          <div className="rounded-md border border-slate-200 p-3">
+            <div className="text-xs text-slate-500">Expired Units</div>
+            <div className="text-xl font-semibold text-slate-900">{expiredSummary.totalUnits}</div>
+          </div>
+          <div className="rounded-md border border-slate-200 p-3">
+            <div className="text-xs text-slate-500">Expired kg</div>
+            <div className="text-xl font-semibold text-slate-900">{expiredSummary.totalKg}</div>
+          </div>
+        </div>
+
+        <div className="mt-4 overflow-x-auto rounded-md border border-slate-200 p-3">
+          <div className="mb-2 text-xs font-medium text-slate-600">Daily expired trend (kg by expiry date)</div>
+          {expiredTrend.length === 0 ? (
+            <div className="py-6 text-sm text-slate-500">No expired lots found.</div>
+          ) : (
+            <svg
+              className="h-40 w-full min-w-[680px]"
+              viewBox={`0 0 ${Math.max(expiredTrend.length * 46 + 30, 680)} 170`}
+              role="img"
+              aria-label="Daily expired food trend chart"
+            >
+              {expiredTrend.map((row, idx) => {
+                const x = 30 + idx * 46;
+                const barHeight = maxExpiredKg > 0 ? Math.round((row.totalKg / maxExpiredKg) * 100) : 0;
+                const y = 120 - barHeight;
+                return (
+                  <g key={row.date}>
+                    <rect x={x} y={y} width={24} height={barHeight} rx={4} fill="#2563eb" />
+                    <text x={x + 12} y={136} textAnchor="middle" fontSize="10" fill="#475569">
+                      {row.date.slice(5)}
+                    </text>
+                    <text x={x + 12} y={y - 4} textAnchor="middle" fontSize="10" fill="#0f172a">
+                      {row.totalKg}
+                    </text>
+                  </g>
+                );
+              })}
+              <line x1="20" y1="120" x2={Math.max(expiredTrend.length * 46 + 20, 670)} y2="120" stroke="#cbd5e1" />
+            </svg>
+          )}
+        </div>
+
+        <div className="mt-3 overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead className="text-slate-500">
+              <tr>
+                <th className="py-2 text-left">Expiry</th>
+                <th className="py-2 text-left">Lot</th>
+                <th className="py-2 text-left">Product</th>
+                <th className="py-2 text-left">Donor</th>
+                <th className="py-2 text-left">Status</th>
+                <th className="py-2 text-left">Units</th>
+                <th className="py-2 text-left">kg</th>
+              </tr>
+            </thead>
+            <tbody>
+              {expiredRows.map((row) => (
+                <tr key={`${row.LotID}-${row.Expiry_Date}`} className="border-t border-slate-100">
+                  <td className="py-2">{row.Expiry_Date}</td>
+                  <td className="py-2">{row.LotID}</td>
+                  <td className="py-2">{row.tblProduct?.name}</td>
+                  <td className="py-2">{row.tblDonor?.Name}</td>
+                  <td className="py-2">{row.Status}</td>
+                  <td className="py-2">{row.units}</td>
+                  <td className="py-2">{row.kg}</td>
+                </tr>
+              ))}
+              {expiredRows.length === 0 ? (
+                <tr>
+                  <td className="py-3 text-slate-500" colSpan={7}>
+                    No expired rows.
+                  </td>
+                </tr>
+              ) : null}
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <details className="card p-4" open>
+        <summary className="cursor-pointer text-sm font-semibold text-slate-700">3) Zone Utilization</summary>
         <div className="mt-3 overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead className="text-slate-500">
@@ -126,7 +257,7 @@ export default async function ReportsPage() {
       </details>
 
       <details className="card p-4" open>
-        <summary className="cursor-pointer text-sm font-semibold text-slate-700">3) Open Order Fulfillment</summary>
+        <summary className="cursor-pointer text-sm font-semibold text-slate-700">4) Open Order Fulfillment</summary>
         <div className="mt-3 overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead className="text-slate-500">
@@ -154,7 +285,7 @@ export default async function ReportsPage() {
       </details>
 
       <details className="card p-4" open>
-        <summary className="cursor-pointer text-sm font-semibold text-slate-700">4) Donor Contribution</summary>
+        <summary className="cursor-pointer text-sm font-semibold text-slate-700">5) Donor Contribution</summary>
         <div className="mt-3 overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead className="text-slate-500">
