@@ -33,6 +33,7 @@ function sectionShell(id, title, extraControls = "") {
 
 export async function render(container) {
   const collapseState = loadCollapse();
+  const todayIso = new Date().toISOString().slice(0, 10);
 
   container.innerHTML = `
     <div class="page-grid">
@@ -53,10 +54,11 @@ export async function render(container) {
          <input type="date" id="toDate">
          <button class="btn btn-ghost" id="applyDate">Apply</button>
          <button class="btn btn-ghost" id="csv4">CSV</button>`)}
+      ${sectionShell("r5", "5) Expired Food Overview", `<button class="btn btn-ghost" id="csv5">CSV</button>`)}
     </div>`;
 
-  let data1 = [], data2 = [], data3 = [], data4 = [];
-  const pages = { r1: 1, r2: 1, r3: 1, r4: 1 };
+  let data1 = [], data2 = [], data3 = [], data4 = [], data5 = [];
+  const pages = { r1: 1, r2: 1, r3: 1, r4: 1, r5: 1 };
 
   function renderPaged(sectionId, rows, thead, renderRow) {
     const page = pages[sectionId];
@@ -128,14 +130,115 @@ export async function render(container) {
     );
   }
 
+  function renderExpiredOverview(rows) {
+    const trendMap = new Map();
+    let totalLots = 0;
+    let totalUnits = 0;
+    let totalKg = 0;
+
+    rows.forEach((r) => {
+      totalLots += 1;
+      totalUnits += Number(r.QuantityUnits || 0);
+      totalKg += Number(r.TotalKg || 0);
+
+      const date = r.ExpiryDate || "";
+      const current = trendMap.get(date) || { date, lots: 0, kg: 0 };
+      current.lots += 1;
+      current.kg += Number(r.TotalKg || 0);
+      trendMap.set(date, current);
+    });
+
+    const trend = [...trendMap.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+    const maxKg = trend.reduce((max, item) => Math.max(max, item.kg), 0);
+
+    const chartHtml = trend.length
+      ? `<div class="card" style="padding:.75rem;margin-bottom:.75rem">
+           <div style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Daily expired trend (kg by expiry date)</div>
+           <div style="display:flex;gap:.5rem;align-items:flex-end;overflow-x:auto;padding-bottom:.25rem">
+             ${trend
+               .map((item) => {
+                 const h = maxKg > 0 ? Math.max(8, Math.round((item.kg / maxKg) * 100)) : 8;
+                 const label = String(item.date || "").slice(5);
+                 return `<div style="display:flex;flex-direction:column;align-items:center;min-width:48px">
+                   <div style="font-size:.7rem;color:var(--muted)">${item.kg.toFixed(1)}</div>
+                   <div style="width:22px;height:${h}px;border-radius:6px;background:#2563eb"></div>
+                   <div style="font-size:.7rem;color:var(--muted)">${label}</div>
+                 </div>`;
+               })
+               .join("")}
+           </div>
+         </div>`
+      : `<div class="card" style="padding:.75rem;margin-bottom:.75rem"><span class="muted">No expired lots found.</span></div>`;
+
+    const page = pages.r5;
+    const start = (page - 1) * PAGE_SIZE;
+    const slice = rows.slice(start, start + PAGE_SIZE);
+    const body = slice
+      .map(
+        (r) =>
+          `<tr><td>${r.ExpiryDate || ""}</td><td>${r.LotID || ""}</td><td>${r.ProductName || ""}</td><td>${r.DonorName || ""}</td><td>${r.Status || ""}</td><td>${r.QuantityUnits || 0}</td><td>${r.TotalKg.toFixed(2)}</td></tr>`,
+      )
+      .join("") || `<tr><td colspan="7" class="muted">No rows</td></tr>`;
+
+    const el = container.querySelector(`[data-section='r5'] .section-body`);
+    el.innerHTML = `
+      <div class="card" style="padding:.75rem;margin-bottom:.75rem">
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(120px,1fr));gap:.5rem">
+          <div><small class="muted">Expired lots</small><div><strong>${totalLots}</strong></div></div>
+          <div><small class="muted">Expired units</small><div><strong>${totalUnits}</strong></div></div>
+          <div><small class="muted">Expired kg</small><div><strong>${totalKg.toFixed(2)}</strong></div></div>
+        </div>
+      </div>
+      ${chartHtml}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Expiry</th><th>LotID</th><th>Product</th><th>Donor</th><th>Status</th><th>Units</th><th>kg</th></tr></thead>
+          <tbody>${body}</tbody>
+        </table>
+      </div>
+      <div id="pager-r5"></div>
+    `;
+    const pager = el.querySelector("#pager-r5");
+    pager.innerHTML = renderPagination({ page, size: PAGE_SIZE, total: rows.length });
+    bindPagination(pager, (p) => {
+      pages.r5 = p;
+      renderExpiredOverview(rows);
+    });
+  }
+
+  async function loadExpiredOverview() {
+    const { data, error } = await supabase
+      .from("tblDonationLot")
+      .select("LotID, ExpiryDate, QuantityUnits, UnitWeightKg, Status, tblProduct:ProductID(ProductName), tblDonor:DonorID(DonorName)")
+      .lt("ExpiryDate", todayIso)
+      .in("Status", ["Received", "Stored", "Allocated", "Picked"])
+      .order("ExpiryDate", { ascending: true });
+    if (error) throw error;
+    data5 = (data || []).map((r) => {
+      const units = Number(r.QuantityUnits || 0);
+      const unitKg = Number(r.UnitWeightKg || 0);
+      return {
+        LotID: r.LotID,
+        ExpiryDate: r.ExpiryDate,
+        ProductName: r.tblProduct?.ProductName || "",
+        DonorName: r.tblDonor?.DonorName || "",
+        Status: r.Status,
+        QuantityUnits: units,
+        TotalKg: units * unitKg,
+      };
+    });
+    pages.r5 = 1;
+    renderExpiredOverview(data5);
+  }
+
   try {
-    await Promise.all([loadNearExpiry(), loadUtilization(), loadFulfillment()]);
+    await Promise.all([loadNearExpiry(), loadUtilization(), loadFulfillment(), loadExpiredOverview()]);
     await loadDonorContribution();
   } catch (err) {
     showToast(err.message, "error");
   }
 
-  ["r1", "r2", "r3", "r4"].forEach((id) => applyCollapse(container, id, !!collapseState[id]));
+  ["r1", "r2", "r3", "r4", "r5"].forEach((id) => applyCollapse(container, id, !!collapseState[id]));
 
   container.querySelectorAll("[data-toggle]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -147,11 +250,11 @@ export async function render(container) {
   });
 
   container.querySelector("#expandAll").addEventListener("click", () => {
-    ["r1", "r2", "r3", "r4"].forEach((id) => { collapseState[id] = false; applyCollapse(container, id, false); });
+    ["r1", "r2", "r3", "r4", "r5"].forEach((id) => { collapseState[id] = false; applyCollapse(container, id, false); });
     saveCollapse(collapseState);
   });
   container.querySelector("#collapseAll").addEventListener("click", () => {
-    ["r1", "r2", "r3", "r4"].forEach((id) => { collapseState[id] = true; applyCollapse(container, id, true); });
+    ["r1", "r2", "r3", "r4", "r5"].forEach((id) => { collapseState[id] = true; applyCollapse(container, id, true); });
     saveCollapse(collapseState);
   });
 
@@ -164,6 +267,7 @@ export async function render(container) {
   container.querySelector("#csv2").addEventListener("click", () => exportCSV("zone_utilization.csv", data2));
   container.querySelector("#csv3").addEventListener("click", () => exportCSV("order_fulfillment.csv", data3));
   container.querySelector("#csv4").addEventListener("click", () => exportCSV("donor_contribution.csv", data4));
+  container.querySelector("#csv5").addEventListener("click", () => exportCSV("expired_food_overview.csv", data5));
 }
 
 export function destroy() {}
