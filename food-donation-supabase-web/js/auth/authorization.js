@@ -14,6 +14,7 @@ const ALL_ROUTES = [
   "beneficiary-order",
   "donor-register",
   "donor-donation",
+  "donor-thank-you",
 ];
 
 export const ROLE_ACCESS = {
@@ -50,12 +51,12 @@ export const ROLE_ACCESS = {
   },
   Donors: {
     home: "donor-landing",
-    routes: ["donor-landing", "donor-register", "donor-donation"],
+    routes: ["donor-landing", "donor-register", "donor-donation", "donor-thank-you"],
     quickActions: [],
   },
   Donor: {
     home: "donor-landing",
-    routes: ["donor-landing", "donor-register", "donor-donation"],
+    routes: ["donor-landing", "donor-register", "donor-donation", "donor-thank-you"],
     quickActions: [],
   },
 };
