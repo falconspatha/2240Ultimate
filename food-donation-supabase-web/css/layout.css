@@ -1,0 +1,115 @@
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+}
+
+.app-shell.auth-view {
+  grid-template-columns: 1fr;
+}
+
+.sidebar {
+  background: var(--bg-elev);
+  border-right: 1px solid var(--border);
+  padding: var(--sp-4);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.brand {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
+  font-weight: 700;
+  margin-bottom: var(--sp-4);
+}
+
+.brand img {
+  width: 28px;
+  height: 28px;
+}
+
+.nav {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.main-wrap {
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in oklab, var(--bg), transparent 8%);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.search-wrap input {
+  width: min(36vw, 340px);
+}
+
+.route-container {
+  padding: var(--sp-4);
+  min-height: calc(100vh - 76px);
+}
+
+.page-grid {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--sp-3);
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+
+.login-wrap {
+  min-height: calc(100vh - 140px);
+  display: grid;
+  place-items: center;
+}
+
+.login-card {
+  width: min(94vw, 760px);
+}
+
+@media (max-width: 980px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .split {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <rect width="1200" height="700" fill="#f5f7fb"/>
+  <rect x="20" y="20" width="1160" height="660" rx="12" fill="#ffffff" stroke="#d9e1ea"/>
+  <rect x="40" y="90" width="1120" height="560" rx="8" fill="#fbfcfe" stroke="#d9e1ea"/>
+  <text x="46" y="60" fill="#16202a" font-size="22" font-family="Arial">CRUD Pages Placeholder (Donors/Products/Beneficiaries)</text>
+  <line x1="40" y1="140" x2="1160" y2="140" stroke="#d9e1ea"/>
+  <line x1="40" y1="190" x2="1160" y2="190" stroke="#d9e1ea"/>
+  <line x1="40" y1="240" x2="1160" y2="240" stroke="#d9e1ea"/>
+  <line x1="40" y1="290" x2="1160" y2="290" stroke="#d9e1ea"/>
+</svg>

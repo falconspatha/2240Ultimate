@@ -1,0 +1,5 @@
+identity,role,username,password,suggested_access
+Administration Team,Administration staff,admin.staff,AdminStaff@2240,"Full pages and operations"
+Inventory Team,Inventory staff,inventory.staff,Inventory@2240,"Lots, Zones, Inventory, Picking, Reports"
+Beneficiary User,Beneficiaries,beneficiary.user,Beneficiary@2240,"Orders and Reports"
+Donor User,Donors,donor.user,Donor@2240,"Products, Lots, Reports"

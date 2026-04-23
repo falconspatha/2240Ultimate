@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <rect width="1200" height="700" fill="#f5f7fb"/>
+  <rect x="30" y="30" width="1140" height="150" rx="10" fill="#ffffff" stroke="#d9e1ea"/>
+  <rect x="30" y="200" width="1140" height="150" rx="10" fill="#ffffff" stroke="#d9e1ea"/>
+  <rect x="30" y="370" width="1140" height="150" rx="10" fill="#ffffff" stroke="#d9e1ea"/>
+  <rect x="30" y="540" width="1140" height="130" rx="10" fill="#ffffff" stroke="#d9e1ea"/>
+  <text x="45" y="75" fill="#16202a" font-size="22" font-family="Arial">Reports Page Placeholder (4 Required Queries + CSV)</text>
+</svg>

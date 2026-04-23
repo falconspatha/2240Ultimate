@@ -1,0 +1,8 @@
+create table public."tblZoneCapacityLog" (
+  "LogID" bigint generated always as identity not null,
+  "ZoneID" bigint not null,
+  "LogDate" date not null,
+  "UsedKg" double precision not null,
+  constraint tblZoneCapacityLog_pkey primary key ("LogID"),
+  constraint tblZoneCapacityLog_ZoneID_fkey foreign KEY ("ZoneID") references "tblStorageZone" ("ZoneID")
+) TABLESPACE pg_default;

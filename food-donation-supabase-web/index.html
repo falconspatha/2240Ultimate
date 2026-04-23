@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Food Donation Supabase Web</title>
+    <link rel="icon" href="./assets/logo.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./css/base.css" />
+    <link rel="stylesheet" href="./css/layout.css" />
+    <link rel="stylesheet" href="./css/components.css" />
+    <link rel="stylesheet" href="./css/animations.css" />
+  </head>
+
+  
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Primary">
+        <a class="brand" href="#/dashboard">
+          <img src="./assets/logo.svg" alt="" />
+          <span>Food Donation</span>
+        </a>
+        <nav id="routeNav" class="nav"></nav>
+      </aside>
+
+      <div class="main-wrap">
+        <header class="topbar">
+          <h1 id="pageTitle">Dashboard</h1>
+          <div class="topbar-actions">
+            <label class="search-wrap">
+              <span class="sr-only">Global search</span>
+              <input id="globalSearch" type="search" placeholder="Search here..." />
+            </label>
+            <span id="sessionBadge" class="badge"></span>
+            <button class="btn btn-ghost" id="themeToggle" aria-label="Toggle dark mode">Dark</button>
+            <button class="btn btn-ghost" id="logoutBtn">Logout</button>
+            <button class="btn btn-primary quick-action" data-route="#/donors" data-create="donor">New Donor</button>
+            <button class="btn btn-primary quick-action" data-route="#/orders" data-create="order">New Order</button>
+          </div>
+        </header>
+        <main id="app" class="route-container route-enter" tabindex="-1" aria-live="polite"></main>
+      </div>
+    </div>
+
+    <div id="modalRoot"></div>
+    <div id="toastRoot" class="toast-stack" aria-live="assertive"></div>
+
+    <script src="./js/_env.js"></script>
+    <script type="module" src="./js/main.js"></script>
+  </body>
+</html>
