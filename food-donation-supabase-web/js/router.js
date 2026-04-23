@@ -50,7 +50,11 @@ export async function navigate() {
   }
   const routeLoader = routes[safeKey];
   document.getElementById("pageTitle").textContent =
-    safeKey === "login" ? "Login" : STRINGS.routes.find(([key]) => key === safeKey)?.[1] || "Dashboard";
+    safeKey === "login"
+      ? "Login"
+      : safeKey === "donor-thank-you"
+        ? "Thank You"
+        : STRINGS.routes.find(([key]) => key === safeKey)?.[1] || "Dashboard";
 
   if (currentPage?.destroy) currentPage.destroy();
   app.classList.remove("route-enter");
