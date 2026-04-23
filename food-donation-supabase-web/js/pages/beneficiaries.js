@@ -15,7 +15,7 @@ const SORT_OPTIONS = [
 let unsubSearch;
 
 function fkErrorMessage(err) {
-  if (err?.code === "23503") return "Cannot delete: this record is referenced by existing data (e.g. orders or inventory).";
+  if (err?.code === "23503") return "Cannot delete beneficiary: open or historical orders still reference this beneficiary.";
   return err?.message || "Delete failed.";
 }
 

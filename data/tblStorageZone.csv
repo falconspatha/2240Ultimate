@@ -1,0 +1,4 @@
+ZoneID,ZoneName,TempBand,CapacityKg,Notes
+1,Ambient-A1,Ambient,8000,Ambient dry storage zone
+2,Chiller-C1,Chilled,5000,Chilled storage zone
+3,Freezer-F1,Frozen,5000,Frozen storage zone

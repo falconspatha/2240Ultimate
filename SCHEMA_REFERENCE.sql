@@ -23,7 +23,6 @@ create table public."tblDonationLot" (
   "ExpiryDate" date not null,
   "ReceivedDate" date not null,
   "TempRequirement" text not null,
-  "SuggestedZoneID" text null,
   "StoredZoneID" bigint not null,
   "Status" text not null,
   "Notes" text null,

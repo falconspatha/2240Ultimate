@@ -16,7 +16,7 @@ const SORT_OPTIONS = [
 let unsubSearch;
 
 function fkErrorMessage(err) {
-  if (err?.code === "23503") return "Cannot delete: this record is referenced by existing data (e.g. lots, orders, or inventory).";
+  if (err?.code === "23503") return "Cannot delete donor: donation lots still reference this donor. Reassign or remove related lots first.";
   return err?.message || "Delete failed.";
 }
 

@@ -1,0 +1,26 @@
+BeneficiaryID,BeneficiaryName,ContactName,Phone,Address,District,Latitude,Longitude,HasColdStorage,CreatedAt
+1,Beneficiary 01 Center,Contact 01,+60180000001,1 Jalan Benefit1,Kuala Lumpur,3.1390,101.6869,true,2026-02-01
+2,Beneficiary 02 Center,Contact 02,+60180000002,2 Jalan Benefit2,Selangor,3.0738,101.5183,false,2026-02-02
+3,Beneficiary 03 Center,Contact 03,+60180000003,3 Jalan Benefit3,Penang,5.4141,100.3288,true,2026-02-03
+4,Beneficiary 04 Center,Contact 04,+60180000004,4 Jalan Benefit4,Johor,1.4927,103.7414,false,2026-02-04
+5,Beneficiary 05 Center,Contact 05,+60180000005,5 Jalan Benefit5,Perak,4.5975,101.0901,true,2026-02-05
+6,Beneficiary 06 Center,Contact 06,+60180000006,6 Jalan Benefit6,Kuala Lumpur,3.1402,101.6956,false,2026-02-06
+7,Beneficiary 07 Center,Contact 07,+60180000007,7 Jalan Benefit7,Selangor,3.1073,101.6067,true,2026-02-07
+8,Beneficiary 08 Center,Contact 08,+60180000008,8 Jalan Benefit8,Penang,5.4137,100.3290,false,2026-02-08
+9,Beneficiary 09 Center,Contact 09,+60180000009,9 Jalan Benefit9,Johor,1.4655,103.7578,true,2026-02-09
+10,Beneficiary 10 Center,Contact 10,+60180000010,10 Jalan Benefit10,Perak,4.5921,101.0789,false,2026-02-10
+11,Beneficiary 11 Center,Contact 11,+60180000011,11 Jalan Benefit11,Kuala Lumpur,3.1455,101.6998,true,2026-02-11
+12,Beneficiary 12 Center,Contact 12,+60180000012,12 Jalan Benefit12,Selangor,3.1120,101.5988,false,2026-02-12
+13,Beneficiary 13 Center,Contact 13,+60180000013,13 Jalan Benefit13,Penang,5.4200,100.3340,true,2026-02-13
+14,Beneficiary 14 Center,Contact 14,+60180000014,14 Jalan Benefit14,Johor,1.4720,103.7460,false,2026-02-14
+15,Beneficiary 15 Center,Contact 15,+60180000015,15 Jalan Benefit15,Perak,4.6012,101.0821,true,2026-02-15
+16,Beneficiary 16 Center,Contact 16,+60180000016,16 Jalan Benefit16,Kuala Lumpur,3.1510,101.7032,false,2026-02-16
+17,Beneficiary 17 Center,Contact 17,+60180000017,17 Jalan Benefit17,Selangor,3.1185,101.6123,true,2026-02-17
+18,Beneficiary 18 Center,Contact 18,+60180000018,18 Jalan Benefit18,Penang,5.4267,100.3395,false,2026-02-18
+19,Beneficiary 19 Center,Contact 19,+60180000019,19 Jalan Benefit19,Johor,1.4782,103.7522,true,2026-02-19
+20,Beneficiary 20 Center,Contact 20,+60180000020,20 Jalan Benefit20,Perak,4.6068,101.0897,false,2026-02-20
+21,Beneficiary 21 Center,Contact 21,+60180000021,21 Jalan Benefit21,Kuala Lumpur,3.1564,101.7080,true,2026-02-21
+22,Beneficiary 22 Center,Contact 22,+60180000022,22 Jalan Benefit22,Selangor,3.1248,101.6204,false,2026-02-22
+23,Beneficiary 23 Center,Contact 23,+60180000023,23 Jalan Benefit23,Penang,5.4311,100.3457,true,2026-02-23
+24,Beneficiary 24 Center,Contact 24,+60180000024,24 Jalan Benefit24,Johor,1.4836,103.7603,false,2026-02-24
+25,Beneficiary 25 Center,Contact 25,+60180000025,25 Jalan Benefit25,Perak,4.6129,101.0952,true,2026-02-25

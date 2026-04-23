@@ -1,0 +1,8 @@
+ProductID,ProductName,Category,UnitWeightKg,TempRequirement,ShelfLifeDays,Barcode
+1,fruit,Fresh,1.2,Chilled,14,955700000001
+2,meat,Protein,1.0,Frozen,120,955700000002
+3,rice,Dry,5.0,Ambient,365,955700000003
+4,vegetables,Fresh,0.8,Chilled,10,955700000004
+5,milk,Dairy,1.0,Chilled,30,955700000005
+6,noodles,Dry,0.5,Ambient,180,955700000006
+7,luncheon meat,Processed,0.34,Ambient,540,955700000007

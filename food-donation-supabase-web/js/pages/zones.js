@@ -17,6 +17,11 @@ const SORT_OPTIONS = [
 
 let unsubSearch;
 
+function fkErrorMessage(err) {
+  if (err?.code === "23503") return "Cannot delete zone: storage lots, inventory, or capacity logs still reference this zone.";
+  return err?.message || "Delete failed.";
+}
+
 function modal(content) {
   const root = document.getElementById("modalRoot");
   root.innerHTML = `<div class="modal-backdrop"><div class="modal"><button class="modal-close" aria-label="Close" onclick="this.closest('.modal-backdrop').parentElement.innerHTML=''">&times;</button>${content}</div></div>`;
@@ -113,11 +118,15 @@ export async function render(container) {
       btn.addEventListener("click", () =>
         confirmModal({
           title: "Delete zone?",
-          message: "Delete only when no inventory depends on it.",
+          message: "Delete only when no related records depend on this zone.",
           onConfirm: async () => {
-            await deleteZone(btn.dataset.del);
-            showToast("Zone deleted");
-            await load();
+            try {
+              await deleteZone(btn.dataset.del);
+              showToast("Zone deleted");
+              await load();
+            } catch (err) {
+              showToast(fkErrorMessage(err), "error");
+            }
           },
         }),
       ),
