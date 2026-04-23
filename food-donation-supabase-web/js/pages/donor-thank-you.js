@@ -34,12 +34,16 @@ export async function render(container) {
     </section>
   `;
 
-  container.querySelector("#thankYouBackToLanding")?.addEventListener("click", () => {
-    location.hash = "#/donor-landing";
-  });
-  container.querySelector("#thankYouSubmitAnother")?.addEventListener("click", () => {
-    location.hash = "#/donor-donation";
-  });
+  container
+    .querySelector("#thankYouBackToLanding")
+    ?.addEventListener("click", () => {
+      location.hash = "#/donor-landing";
+    });
+  container
+    .querySelector("#thankYouSubmitAnother")
+    ?.addEventListener("click", () => {
+      location.hash = "#/donor-donation";
+    });
 }
 
 export function destroy() {}
