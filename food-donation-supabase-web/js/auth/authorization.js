@@ -40,12 +40,12 @@ export const ROLE_ACCESS = {
   },
   Beneficiaries: {
     home: "beneficiary-landing",
-    routes: ["beneficiary-landing", "beneficiary-register", "beneficiary-order"],
+    routes: ["beneficiary-landing", "beneficiary-register", "beneficiary-order", "beneficiary-delivery-status"],
     quickActions: [],
   },
   Beneficiary: {
     home: "beneficiary-landing",
-    routes: ["beneficiary-landing", "beneficiary-register", "beneficiary-order"],
+    routes: ["beneficiary-landing", "beneficiary-register", "beneficiary-order", "beneficiary-delivery-status"],
     quickActions: [],
   },
   Donors: {
