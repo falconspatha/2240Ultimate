@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { rpcUpsertDonationLot } from "../../../../lib/services/rpc";
 
 export async function createDonorLot(formData: FormData) {
@@ -18,6 +19,17 @@ export async function createDonorLot(formData: FormData) {
     p_temp_req: formData.get("tempRequirement"),
     p_notes: formData.get("notes"),
   };
-  await rpcUpsertDonationLot(payload);
+  const result = await rpcUpsertDonationLot(payload);
   revalidatePath("/donor/donation");
+
+  const lotId = typeof result === "number" ? result : Number(result || 0);
+  const params = new URLSearchParams({
+    donorId: String(donorId),
+    lotId: lotId ? String(lotId) : "",
+    productId: String(payload.p_product_id),
+    qtyUnits: String(payload.p_qty_units),
+    unitWeightKg: String(payload.p_unit_weight_kg),
+    expiryDate: String(payload.p_expiry || ""),
+  });
+  redirect(`/donor/donation/thank-you?${params.toString()}`);
 }

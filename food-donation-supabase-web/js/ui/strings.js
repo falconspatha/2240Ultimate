@@ -20,6 +20,7 @@ export const STRINGS = {
     ["beneficiary-delivery-status", "Delivery Status"],
     ["donor-register", "Donor Register"],
     ["donor-donation", "Make Donation"],
+    ["donor-thank-you", "Thank You"],
   ],
   errors: {
     network: "Network issue. Please try again.",

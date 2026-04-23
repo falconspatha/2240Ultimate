@@ -125,7 +125,7 @@ export async function render(container) {
     if (lines.some((line) => !validateLotDates(today(), line.ExpiryDate))) return showToast("Expiry date must be after received date.", "error");
 
     try {
-      await Promise.all(
+      const results = await Promise.all(
         lines.map((line) =>
           receiveLot({
             ...payload,
@@ -139,12 +139,27 @@ export async function render(container) {
           }),
         ),
       );
-      showToast(`${lines.length} donation lot(s) saved.`);
-      form.reset();
-      linesWrap.innerHTML = lineRowTemplate(products);
-      container.querySelector("[name='DonorID']").value = donorId;
-      container.querySelector("[name='ReceivedDate']").value = today();
-      container.querySelector("[name='Status']").value = "Received";
+
+      const lotIds = results
+        .map((row) => Number(row?.LotID ?? row?.lot_id ?? row?.lotId ?? 0))
+        .filter((id) => Number.isFinite(id) && id > 0)
+        .sort((a, b) => a - b);
+      const totalUnits = lines.reduce((sum, line) => sum + Number(line.QuantityUnits || 0), 0);
+      const totalKg = lines.reduce((sum, line) => sum + Number(line.QuantityUnits || 0) * Number(line.UnitWeightKg || 0), 0);
+      const expiryDates = lines.map((line) => line.ExpiryDate).filter(Boolean).sort();
+      const expirySummary =
+        expiryDates.length > 0 ? `${expiryDates[0]} to ${expiryDates[expiryDates.length - 1]}` : "Details unavailable";
+
+      const params = new URLSearchParams({
+        donorId: String(donorId),
+        lineCount: String(lines.length),
+        totalUnits: String(totalUnits),
+        totalKg: totalKg.toFixed(2),
+        expirySummary,
+        lotStart: lotIds.length ? String(lotIds[0]) : "Details unavailable",
+        lotEnd: lotIds.length ? String(lotIds[lotIds.length - 1]) : "Details unavailable",
+      });
+      location.hash = `#/donor-thank-you?${params.toString()}`;
     } catch (error) {
       showToast(error.message, "error");
     }

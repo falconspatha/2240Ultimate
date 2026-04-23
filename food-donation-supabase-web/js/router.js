@@ -27,6 +27,7 @@ const routes = {
   "beneficiary-delivery-status": () => import("./pages/beneficiary-delivery-status.js"),
   "donor-register": () => import("./pages/donor-register.js"),
   "donor-donation": () => import("./pages/donor-donation.js"),
+  "donor-thank-you": () => import("./pages/donor-thank-you.js"),
 };
 
 let currentPage;
